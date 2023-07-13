@@ -10,7 +10,7 @@ import {
 } from './components/styles';
 import nextId from 'react-id-generator';
 import { useDispatch, useSelector } from 'react-redux';
-import { __addToDo, __deleteTodo } from './redux/modules/todosSlice';
+import { __addToDo, __deleteTodo, deleteTodo } from './redux/modules/todosSlice';
 
 function App() {
   const id = nextId();
@@ -24,6 +24,16 @@ function App() {
      * 시험 문제 1.
      * 이곳에서 추가하기 기능을 구현해주세요.
      */
+    // 1. 저장된 id, title, body를 객체로 묶는다
+    const newTodo = {
+      id,
+      title,
+      body
+    }
+    // 2. thunk의 addTodo에 전달해 실행한다
+    dispatch(__addToDo(newTodo));
+    // 3. input reset
+    resetInputs();
   };
 
   const onDeleteTodo = (id) => {
@@ -31,6 +41,8 @@ function App() {
      * 시험 문제 2.
      * 이곳에서 삭제하기 기능을 구현해주세요.
      */
+    // 1. id를 thunk의 deleteTodo에 전달해 실행한다
+    dispatch(__deleteTodo({id}));
   };
 
   const resetInputs = () => {
@@ -42,6 +54,7 @@ function App() {
   };
   const onChangeTitle = (e) => setTitle(e.target.value);
   const onChangeBody = (e) => setBody(e.target.value);
+  
   return (
     <PageWrapper>
       <TodoContainer>
@@ -60,14 +73,16 @@ function App() {
             onChange={onChangeBody}
           />
 
-          <Button>+ 추가하기</Button>
+          <Button onClick={onAddTodo}>+ 추가하기</Button>
         </InputContainer>
         <TodoListContainer>
           {todos.map((todo) => (
             <TodoCard key={todo.id}>
               <span>제목: {todo.title}</span>
               <span>할 일: {todo.body}</span>
-              <Button>삭제하기</Button>
+              <Button onClick={() => {
+                onDeleteTodo(todo.id)
+              }}>삭제하기</Button>
             </TodoCard>
           ))}
         </TodoListContainer>
